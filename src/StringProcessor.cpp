@@ -13,3 +13,31 @@ void toUpper(std::string& str) {
             c = toupper(c);
     }
 }
+
+std::vector<std::string> stringSplit(const std::string& str, char delimiter) {
+    std::vector<std::string> result;
+    size_t start = 0;
+    size_t end;
+
+    while ((end = str.find(delimiter, start)) != std::string::npos) {
+        result.push_back(str.substr(start, end - start));
+        start = end + 1;
+    }
+
+    result.push_back(str.substr(start));
+    return result;
+}
+
+std::vector<std::string> split(const std::string& str, const std::string& delimiter) {
+    std::vector<std::string> result;
+    size_t start = 0;
+    size_t end;
+
+    while ((end = str.find(delimiter, start)) != std::string::npos) {
+        result.push_back(str.substr(start, end - start));
+        start = end + delimiter.length();
+    }
+
+    result.push_back(str.substr(start));
+    return result;
+}

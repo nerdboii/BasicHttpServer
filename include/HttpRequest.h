@@ -27,6 +27,9 @@ HttpMethod string_to_method(const std::string& methodString);
  */
 class HttpRequest : public HttpMessage {
 public:
+    // default constructor for Http Request class
+    HttpRequest() : method(HttpMethod::GET) {}
+
     /**
      * @brief Construct a new Http Request object with the provided Http Method
      * 

@@ -1,6 +1,8 @@
 #include "HttpMessage.h"
 #include "StringProcessor.h"
 
+#include <stdexcept>
+
 std::string to_string(HttpVersion version) {
     switch (version) {
         case HttpVersion::HTTP_1_0:
@@ -12,3 +14,13 @@ std::string to_string(HttpVersion version) {
     }
 }
 
+HttpVersion string_to_version(const std::string& versionString) {
+    std::string temp = versionString;
+    toUpper(temp);
+    if (temp == "HTTP/1.0")
+        return HttpVersion::HTTP_1_0;
+    else if (temp == "HTTP/1.1")
+        return HttpVersion::HTTP_1_1;
+    else 
+        throw std::invalid_argument("Unexpected HTTP version");
+}
