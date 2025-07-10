@@ -10,8 +10,12 @@
 #include <cstring>
 
 Server::Server(int port) : port(port) {
+    supportedMethod.insert(HttpMethod::GET);
+    supportedMethod.insert(HttpMethod::HEAD);
+    supportedURI.insert(URI("/"));
+    supportedURI.insert(URI("/about"));
     setupServerSocket();
-    epoll.add(server_fd);
+    epoll.add(EPOLL_CTL_ADD, server_fd, EPOLLIN, nullptr);
 }
 
 Server::~Server() {
@@ -19,7 +23,7 @@ Server::~Server() {
 }
 
 void Server::setupServerSocket() {
-    server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    server_fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
     fcntl(server_fd, F_SETFL, O_NONBLOCK);
 
     int opt = 1;
@@ -52,11 +56,17 @@ void Server::run() {
 }
 
 void Server::acceptConnection() {
+    EventData *data;
+    sockaddr client_addr;
+    socklen_t client_len = sizeof(client_addr);
+    int client_fd;
+
     while (true) {
-        int client_fd = accept(server_fd, nullptr, nullptr);
-        if (client_fd == -1) break;
-        fcntl(client_fd, F_SETFL, O_NONBLOCK);
-        epoll.add(client_fd);
+        int client_fd = accept4(server_fd, &client_addr, &client_len, SOCK_NONBLOCK);
+        if (client_fd < 0) break;
+        data = new EventData();
+        data->fd = client_fd;
+        epoll.add(EPOLL_CTL_ADD, client_fd, EPOLLIN, data);
     }
 }
 
@@ -74,7 +84,28 @@ void Server::handleClient(int client_fd) {
     std::string content = "<html><h1>Hello from C++ HTTP Server!</h1></html>";
     if (path == "/about") content = "<html><h1>About Page</h1></html>";
 
-    std::string response = HttpResponse::buildResponse(content);
+    std::string response;//= HttpResponse::buildResponse(content);
     send(client_fd, response.c_str(), response.size(), 0);
     close(client_fd);
+}
+
+HttpResponse Server::handleRequest(const HttpRequest& request) {
+    if (supportedURI.find(request.getUri()) == supportedURI.end()) {
+        return HttpResponse(HttpStatusCode::NotFound);
+    }
+    if (supportedMethod.find(request.getMethod()) == supportedMethod.end()) {
+        return HttpResponse(HttpStatusCode::MethodNotAllowed);
+    }
+    HttpResponse response(HttpStatusCode::Ok);
+    switch (request.getMethod()) {
+        // Implementing this
+        case HttpMethod::GET:
+            response.setHeader("Content-Type", "text/plain");
+            response.setContent("Hello, world\n");
+            return response;
+        case HttpMethod::HEAD:
+            return;
+        default:
+            return;
+    }
 }

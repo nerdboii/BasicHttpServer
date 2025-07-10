@@ -1,5 +1,7 @@
 #include "HttpResponse.h"
 
+#include <sstream>
+
 std::string to_string(HttpStatusCode statusCode) {
     switch (statusCode) {
         case HttpStatusCode::Ok:
@@ -33,4 +35,18 @@ std::string to_string(HttpStatusCode statusCode) {
         default:
             return "";
     }
+}
+
+std::string to_string(const HttpResponse& response, bool send_content) {
+  std::ostringstream responseString;
+
+  responseString << to_string(response.getVersion()) << ' ';
+  responseString << static_cast<int>(response.getStatusCode()) << ' ';
+  responseString << to_string(response.getStatusCode()) << "\r\n";
+  for (const auto& p : response.getHeaders())
+    responseString << p.first << ": " << p.second << "\r\n";
+  responseString << "\r\n";
+  if (send_content) responseString << response.getContent();
+
+  return responseString.str();
 }

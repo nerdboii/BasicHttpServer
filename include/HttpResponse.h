@@ -63,7 +63,7 @@ public:
      * @param sendBody A control flag which decides whether or not the response body should be included
      * @return std::string Content of response in the format of a string
      */
-    friend std::string to_string(const HttpResponse& request, bool sendBody);
+    friend std::string to_string(const HttpResponse& response, bool sendBody);
 
     /**
      * @brief Get a HttpResponse from a string
