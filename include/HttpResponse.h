@@ -21,7 +21,8 @@ enum class HttpStatusCode {
     NotImplemented = 501,
     BadGateway = 502,
     ServiceUnavailable = 503,
-    GatewayTimeout = 504
+    GatewayTimeout = 504,
+    HttpVersionNotSupported = 505
 };
 
 // Get string value of status code
@@ -76,3 +77,6 @@ public:
 private:
     HttpStatusCode statusCode;      // Status code of a request (100, 101, 200, ...)
 };
+
+std::string to_string(const HttpResponse& response, bool sendBody);
+HttpResponse string_to_response(const std::string& responseString);

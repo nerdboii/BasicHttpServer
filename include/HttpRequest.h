@@ -16,11 +16,6 @@ enum class HttpMethod {
     PATCH
 };
 
-// Get string value of method
-std::string to_string(HttpMethod method);
-// Get method from a string
-HttpMethod string_to_method(const std::string& methodString);
-
 /**
  * @brief This class represents a HttpRequest 
  * 
@@ -49,6 +44,9 @@ public:
     HttpMethod getMethod() const { return method; }
     URI getUri() const { return uri; }
 
+    // Check if it is a close request from client
+    bool isClose() const;
+
     /**
      * @brief Get request content in format of a string
      * 
@@ -65,8 +63,13 @@ public:
      */
     friend HttpRequest string_to_request(const std::string& requestString);
 
-
 private:
     HttpMethod method;      // Method of the request (GET, POST, HEAD, ...)
     URI uri;                // URI of the request
 };
+
+// Get string value and back
+std::string to_string(HttpMethod method);
+HttpMethod string_to_method(const std::string& methodString);
+std::string to_string(const HttpRequest& request);
+HttpRequest string_to_request(const std::string& requestString);

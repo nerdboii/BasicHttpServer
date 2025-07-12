@@ -1,18 +1,27 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
+project(DTL_MINIPROJECT)
 
-project(SimpleHttpServer
-    DESCRIPTION "A simple web server that supports HTTP/1.1"
-    LANGUAGES CXX)
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
-
+# Include headers
 include_directories(include)
 
-set(SRC_DIR src)
-
-add_executable(SimpleHttpServer
-    ${SRC_DIR}/*.cpp
+# Source files
+file(GLOB_RECURSE SOURCES
+    src/*.cpp
 )
 
-target_link_libraries(SimpleHttpServer PRIVATE Threads::Threads)
+# Build executable
+add_executable(DTL_MINIPROJECT ${SOURCES})
+
+# Set compile options (optional)
+target_compile_options(DTL_MINIPROJECT PRIVATE -Wall -Wextra -Wpedantic)
+
+# Set output directory (optional)
+set_target_properties(DTL_MINIPROJECT PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

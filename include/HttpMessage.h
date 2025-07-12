@@ -32,14 +32,6 @@ public:
      */
     virtual ~HttpMessage() = default;
 
-    // Get and Set Version for Message
-    HttpVersion getVersion() const {
-        return version;
-    }
-    void setVersion(HttpVersion ver) {
-        version = ver;
-    }
-
     /**
      * @brief Get the Header Value of the provided key
      * 
@@ -56,6 +48,19 @@ public:
         return headers;
     }
 
+    // Get and set functions
+    HttpVersion getVersion() const { return version; }
+    void setVersion(HttpVersion ver) { version = ver; }
+    int getContentLen() const { return content.size(); }
+    std::string getContent() const { return content; }
+    void setContent(const std::string& body) { 
+        content = body;
+        setContentLen();
+    }
+    void setContentLen() {
+        setHeader("Content-Length", std::to_string(content.length()));
+    }
+
     /**
      * @brief Set or update a header key-value pair.
      * 
@@ -64,14 +69,6 @@ public:
      */
     void setHeader(const std::string& key, const std::string& value) {
         headers[key] = std::move(value);
-    }
-
-    // Get and set functions for Content
-    int getContentLen() const { return content.size(); }
-    std::string getContent() const { return content; }
-    std::string setContent(const std::string& body) { content = body; }
-    void setContentLen() {
-        setHeader("Content-Length", std::to_string(content.length()));
     }
 
     /**

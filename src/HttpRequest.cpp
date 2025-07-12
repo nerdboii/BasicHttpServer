@@ -3,6 +3,8 @@
 
 #include <stdexcept>
 #include <sstream>
+#include <iostream>
+#include <algorithm>
 
 std::string to_string(HttpMethod method) {
     switch (method) {
@@ -53,6 +55,11 @@ HttpMethod string_to_method(const std::string &requestString) {
     } else {
         throw std::invalid_argument("Unexpected HTTP method");
     }
+}
+
+bool HttpRequest::isClose() const {
+    if (headers.find("Connection") != headers.end() && headers.at("Connection") == "close") return true;
+    else return false;
 }
 
 std::string to_string(const HttpRequest& request) {
@@ -118,4 +125,6 @@ HttpRequest string_to_request(const std::string& requestString) {
         body = requestString.substr(start, end - start);
         request.setContent(body);
     }
+
+    return request;
 }

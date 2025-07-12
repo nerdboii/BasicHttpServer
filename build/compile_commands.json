@@ -1,0 +1,47 @@
+[
+{
+  "directory": "/home/poseidon/Projects/DTL_MiniProject/build",
+  "command": "/usr/bin/g++  -I/home/poseidon/Projects/DTL_MiniProject/include -g -Wall -Wextra -Wpedantic -std=gnu++17 -o CMakeFiles/DTL_MINIPROJECT.dir/src/Epoll.cpp.o -c /home/poseidon/Projects/DTL_MiniProject/src/Epoll.cpp",
+  "file": "/home/poseidon/Projects/DTL_MiniProject/src/Epoll.cpp"
+},
+{
+  "directory": "/home/poseidon/Projects/DTL_MiniProject/build",
+  "command": "/usr/bin/g++  -I/home/poseidon/Projects/DTL_MiniProject/include -g -Wall -Wextra -Wpedantic -std=gnu++17 -o CMakeFiles/DTL_MINIPROJECT.dir/src/HttpMessage.cpp.o -c /home/poseidon/Projects/DTL_MiniProject/src/HttpMessage.cpp",
+  "file": "/home/poseidon/Projects/DTL_MiniProject/src/HttpMessage.cpp"
+},
+{
+  "directory": "/home/poseidon/Projects/DTL_MiniProject/build",
+  "command": "/usr/bin/g++  -I/home/poseidon/Projects/DTL_MiniProject/include -g -Wall -Wextra -Wpedantic -std=gnu++17 -o CMakeFiles/DTL_MINIPROJECT.dir/src/HttpParser.cpp.o -c /home/poseidon/Projects/DTL_MiniProject/src/HttpParser.cpp",
+  "file": "/home/poseidon/Projects/DTL_MiniProject/src/HttpParser.cpp"
+},
+{
+  "directory": "/home/poseidon/Projects/DTL_MiniProject/build",
+  "command": "/usr/bin/g++  -I/home/poseidon/Projects/DTL_MiniProject/include -g -Wall -Wextra -Wpedantic -std=gnu++17 -o CMakeFiles/DTL_MINIPROJECT.dir/src/HttpRequest.cpp.o -c /home/poseidon/Projects/DTL_MiniProject/src/HttpRequest.cpp",
+  "file": "/home/poseidon/Projects/DTL_MiniProject/src/HttpRequest.cpp"
+},
+{
+  "directory": "/home/poseidon/Projects/DTL_MiniProject/build",
+  "command": "/usr/bin/g++  -I/home/poseidon/Projects/DTL_MiniProject/include -g -Wall -Wextra -Wpedantic -std=gnu++17 -o CMakeFiles/DTL_MINIPROJECT.dir/src/HttpResponse.cpp.o -c /home/poseidon/Projects/DTL_MiniProject/src/HttpResponse.cpp",
+  "file": "/home/poseidon/Projects/DTL_MiniProject/src/HttpResponse.cpp"
+},
+{
+  "directory": "/home/poseidon/Projects/DTL_MiniProject/build",
+  "command": "/usr/bin/g++  -I/home/poseidon/Projects/DTL_MiniProject/include -g -Wall -Wextra -Wpedantic -std=gnu++17 -o CMakeFiles/DTL_MINIPROJECT.dir/src/Main.cpp.o -c /home/poseidon/Projects/DTL_MiniProject/src/Main.cpp",
+  "file": "/home/poseidon/Projects/DTL_MiniProject/src/Main.cpp"
+},
+{
+  "directory": "/home/poseidon/Projects/DTL_MiniProject/build",
+  "command": "/usr/bin/g++  -I/home/poseidon/Projects/DTL_MiniProject/include -g -Wall -Wextra -Wpedantic -std=gnu++17 -o CMakeFiles/DTL_MINIPROJECT.dir/src/Server.cpp.o -c /home/poseidon/Projects/DTL_MiniProject/src/Server.cpp",
+  "file": "/home/poseidon/Projects/DTL_MiniProject/src/Server.cpp"
+},
+{
+  "directory": "/home/poseidon/Projects/DTL_MiniProject/build",
+  "command": "/usr/bin/g++  -I/home/poseidon/Projects/DTL_MiniProject/include -g -Wall -Wextra -Wpedantic -std=gnu++17 -o CMakeFiles/DTL_MINIPROJECT.dir/src/StringProcessor.cpp.o -c /home/poseidon/Projects/DTL_MiniProject/src/StringProcessor.cpp",
+  "file": "/home/poseidon/Projects/DTL_MiniProject/src/StringProcessor.cpp"
+},
+{
+  "directory": "/home/poseidon/Projects/DTL_MiniProject/build",
+  "command": "/usr/bin/g++  -I/home/poseidon/Projects/DTL_MiniProject/include -g -Wall -Wextra -Wpedantic -std=gnu++17 -o CMakeFiles/DTL_MINIPROJECT.dir/src/WorkerThread.cpp.o -c /home/poseidon/Projects/DTL_MiniProject/src/WorkerThread.cpp",
+  "file": "/home/poseidon/Projects/DTL_MiniProject/src/WorkerThread.cpp"
+}
+]

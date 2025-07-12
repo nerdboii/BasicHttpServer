@@ -22,5 +22,5 @@ HttpVersion string_to_version(const std::string& versionString) {
     else if (temp == "HTTP/1.1")
         return HttpVersion::HTTP_1_1;
     else 
-        throw std::invalid_argument("Unexpected HTTP version");
+        throw std::logic_error("Unexpected HTTP version");
 }
