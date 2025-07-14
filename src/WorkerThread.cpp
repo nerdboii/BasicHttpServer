@@ -8,7 +8,7 @@ void WorkerThread::threadLoop() {
     EventData* data;
     bool active = true;
 
-    while (true) {
+    while (running) {
         if (!active) {
             auto& rng = RandomUtils::rng();
             auto& sleep_times = RandomUtils::sleepTimes();

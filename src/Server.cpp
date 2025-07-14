@@ -19,7 +19,7 @@ Server::Server(int port) : port(port) {
 }
 
 Server::~Server() {
-    close(server_fd);
+    for (int i = 0; i < threadPoolSize; i++) delete workerThreads[i];
 }
 
 void Server::setupServerSocket() {
@@ -69,6 +69,7 @@ void Server::stop() {
         workerThreads[i]->join();
     }
 
+    close(server_fd);
 }
 
 HttpResponse Server::handleRequest(const HttpRequest& request) {
