@@ -77,4 +77,5 @@ private:
     std::thread listenerThread;
     WorkerThread *workerThreads[threadPoolSize];
     bool running;
+    std::string resourcesPath;
 };

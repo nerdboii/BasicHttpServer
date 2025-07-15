@@ -25,8 +25,8 @@ void ensure_enough_resource(int resource, std::uint32_t soft_limit, std::uint32_
 }
 
 int main() {
-    std::cout << "Setting new limits for number of threads.." << std::endl;
-    ensure_enough_resource(RLIMIT_NPROC, 60000, 60000);
+    //std::cout << "Setting new limits for number of threads.." << std::endl;
+    //ensure_enough_resource(RLIMIT_NPROC, 60000, 60000);
 
     Server server(8080);
     server.run();

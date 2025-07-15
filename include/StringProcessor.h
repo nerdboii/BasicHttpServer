@@ -34,3 +34,13 @@ std::vector<std::string> stringSplit(const std::string& str, char delimiter);
  * @return std::vector<std::string> vector of strings after splitting
  */
 std::vector<std::string> stringSplit(const std::string& str, const std::string& delimiter);
+
+/**
+ * @brief Check if a string ends with another string
+ * 
+ * @param str 
+ * @param suffix 
+ * @return true 
+ * @return false 
+ */
+bool ends_with(const std::string& str, const std::string& suffix);

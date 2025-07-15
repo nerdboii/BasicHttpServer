@@ -9,6 +9,9 @@
 #include <cstring>
 #include <algorithm>
 #include <limits.h>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 Server::Server(int port) : port(port) {
     supportedMethod.insert(HttpMethod::GET);
@@ -16,6 +19,7 @@ Server::Server(int port) : port(port) {
     supportedURI.insert(URI("/"));
     supportedURI.insert(URI("/about"));
     running = false;
+    resourcesPath = "resources/html";
 }
 
 Server::~Server() {
@@ -73,26 +77,31 @@ void Server::stop() {
 }
 
 HttpResponse Server::handleRequest(const HttpRequest& request) {
-    if (supportedURI.find(request.getUri()) == supportedURI.end()) {
-        return HttpResponse(HttpStatusCode::NotFound);
-    }
     if (supportedMethod.find(request.getMethod()) == supportedMethod.end()) {
         return HttpResponse(HttpStatusCode::MethodNotAllowed);
     }
 
-    HttpResponse response(HttpStatusCode::Ok);
-    if (request.getUri().getPath() == "/") {
+    HttpResponse response;
+    std::string filePath = resourcesPath + request.getUri().getPath();
+
+    if (filePath == "/") {
         response.setHeader("Content-Type", "text/plain");
-        response.setContent("Hello from server\n");
-    } else if (request.getUri().getPath() == "/about") {
-        std::string content = "";
-        content += "<!doctype html>\n";
-        content += "<html>\n<body>\n\n";
-        content += "<h1>About Page</h1>\n";
-        content += "</body>\n</html>\n";
-        
-        response.setHeader("Content-Type", "text/html");
-        response.setContent(content);
+        response.setContent("Hello from C++ Server!");
+        return response;
+    }
+
+    if (!fs::exists(filePath) || !fs::is_regular_file(filePath)) {
+        response.SetStatusCode(HttpStatusCode::NotFound);
+        response.setHeader("Content-Type", "text/plain");
+        response.setContent("404 Not Found");
+    } else {
+        response.SetStatusCode(HttpStatusCode::Ok);
+        if (ends_with(filePath, ".html")) {
+            response.setHeader("Content-Type", "text/html");
+        } else if (ends_with(filePath, ".json")) {
+            response.setHeader("Content-Type", "application/json");
+        }
+        response.getContentFromFile(filePath);
     }
 
     return response;

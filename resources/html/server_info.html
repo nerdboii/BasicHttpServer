@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HTTP Server Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 40px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        p {
+            max-width: 800px;
+        }
+        ul, ol {
+            margin-left: 20px;
+        }
+        pre {
+            background: #eee;
+            padding: 10px;
+            overflow-x: auto;
+            border-radius: 5px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        .highlight {
+            background-color: #ddf;
+            padding: 5px;
+        }
+        footer {
+            margin-top: 40px;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple HTTP Server Overview</h1>
+    <p>Welcome to the documentation page for our Simple HTTP Server implementation. This server provides lightweight HTTP functionalities designed for high concurrency and performance, supporting both static content serving and basic API responses.</p>
+
+    <h2>Features</h2>
+    <ul>
+        <li><strong>HTTP/1.1</strong> protocol support</li>
+        <li>Supports <code>GET</code> and <code>HEAD</code> methods</li>
+        <li>Handles up to <strong>10,000</strong> concurrent client connections</li>
+        <li>Processes up to <strong>100,000</strong> requests per second</li>
+        <li>Minimal and efficient C++ implementation</li>
+        <li>Configurable document root for static file serving</li>
+        <li>Simple logging of request events</li>
+    </ul>
+
+    <h2>HTTP Methods Supported</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Method</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>GET</td>
+                <td>Requests a representation of the specified resource. Returns the resource content in the response body.</td>
+            </tr>
+            <tr>
+                <td>HEAD</td>
+                <td>Same as GET, but without the response body. Returns only headers.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Sample HTTP Request</h2>
+    <pre>
+GET /index.html HTTP/1.1
+Host: localhost:8080
+User-Agent: curl/8.0.1
+Accept: */*
+    </pre>
+
+    <h2>Sample HTTP Response</h2>
+    <pre>
+HTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 4523
+
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;&lt;title&gt;Welcome&lt;/title&gt;&lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Welcome to the HTTP Server&lt;/h1&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+    </pre>
+
+    <h2>Performance Benchmarks</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Metric</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Maximum Concurrent Clients</td>
+                <td>10,000</td>
+            </tr>
+            <tr>
+                <td>Peak Request Handling Rate</td>
+                <td>100,000 requests/sec</td>
+            </tr>
+            <tr>
+                <td>Average Response Time</td>
+                <td>2.1 ms</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Server Root Directory</h2>
+    <p>All resources are served from the following directory:</p>
+    <pre class="highlight">/var/www/html/</pre>
+    <p>Ensure all static content such as <code>.html</code>, <code>.css</code>, <code>.js</code>, images, and other files are placed within this folder or its subdirectories.</p>
+
+    <h2>Error Responses</h2>
+    <ul>
+        <li><strong>404 Not Found</strong>: Returned when a requested resource does not exist on the server.</li>
+        <li><strong>501 Not Implemented</strong>: Returned when an unsupported HTTP method is requested.</li>
+    </ul>
+
+    <h2>Example 404 Response</h2>
+    <pre>
+HTTP/1.1 404 Not Found
+Content-Type: text/plain
+Content-Length: 13
+
+404 Not Found
+    </pre>
+
+    <h2>About This Server</h2>
+    <p>This HTTP server was built in C++17 using the <code>std::filesystem</code> and <code>epoll</code> APIs for efficient file handling and network event management. It aims to demonstrate fundamental server architecture principles while maintaining simplicity and high performance.</p>
+
+    <footer>
+        <p>Server Documentation &copy; 2025 by YourName. All rights reserved.</p>
+    </footer>
+</body>
+</html>

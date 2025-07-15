@@ -87,6 +87,13 @@ public:
         headers.clear();
     }
 
+    /**
+     * @brief Get the Content From File
+     * 
+     * @param filePath file path
+     */
+    void getContentFromFile(const std::string& filePath);
+
 protected:
     HttpVersion version;                        // HTTP version used in this message
     std::map<std::string, std::string> headers; // HTTP headers keys and values

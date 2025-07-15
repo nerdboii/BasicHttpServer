@@ -3,6 +3,14 @@
 #include "StringProcessor.h"
 
 #include <string>
+#include <stdexcept>
+
+enum class UriForm {
+    ORIGIN,
+    ABSOLUTE,
+    ASTERISK,
+    AUTHORITY
+};
 
 class URI {
 public:
@@ -25,6 +33,20 @@ public:
     // overload the operator == to be able to add URIs to an unordered_set
     inline bool operator==(const URI& other) const {
         return path == other.path;
+    }
+
+    UriForm getForm() const {
+        if (path[0] == '/') {
+            return UriForm::ORIGIN;
+        } else if (path[0] == '*') {
+            return UriForm::ASTERISK;
+        } else if (path.size() >= 13 && path.substr(0, 13) == "hostname:port") {
+            return UriForm::AUTHORITY;
+        } else if (path.size() >= 7 && path.substr(0, 7) == "http://") {
+            return UriForm::ABSOLUTE;
+        } else {
+            throw std::logic_error("Unexpected URI from Request");
+        }
     }
 
 private:
