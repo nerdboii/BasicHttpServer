@@ -1,6 +1,11 @@
-#pragma once
-
+#include "IRequestHandler.h"
 #include "Epoll.h"
+#include "URI.h"
+#include "WorkerThread.h"
+
+#include <unordered_set>
+#include <thread>
+#include <atomic>
 
 /**
  * @brief HTTP server class using epoll for handling multiple client connections.
@@ -8,7 +13,7 @@
  * This class sets up a TCP server socket, accepts incoming client connections,
  * and handles requests asynchronously via epoll.
  */
-class Server {
+class Server : public IRequestHandler {
 public:
     /**
      * @brief Construct a new Server object
@@ -24,6 +29,10 @@ public:
      */
     ~Server();
 
+    // Adding supported URI and Method
+    void addSupportedURI(const URI& uri) { supportedURI.insert(uri); }
+    void addSupportedMethod(const HttpMethod& method) { supportedMethod.insert(method); }
+
     /**
      * @brief Run the server's main loop
      * 
@@ -31,10 +40,7 @@ public:
      */
     void run();
 
-private:
-    int server_fd;  // File descriptor for the server socket
-    int port;       // Port number the server will bind to
-    Epoll epoll;    // Epoll object to manage connections to clients
+    void stop();
 
     /**
      * @brief Set up the socket server
@@ -45,19 +51,31 @@ private:
     void setupServerSocket();
 
     /**
-     * @brief Accept a new connection from a client
+     * @brief Handle a HttpRequest by server
      * 
-     * Accepts a new connection from a client then adds its file descriptor
-     * to the epoll object
+     * @param request 
+     * @return HttpResponse response to the given request
      */
-    void acceptConnection();
+    HttpResponse handleRequest(const HttpRequest& request) override;
 
-    /**
-     * @brief Handles a request from a connected client
-     * 
-     * Reads the client's request, processes it then sends a response
-     * 
-     * @param client_fd File descriptor of the requesting client socket
-     */
-    void handleClient(int client_fd);
+    // Get least loaded thread in worker threads list
+    WorkerThread* pickLeastLoadedThread();
+
+    // Listens to new connection
+    void clientListener();
+
+private:
+    static const int threadPoolSize = 5;
+    static const int backlogSize = 8192;
+
+    int server_fd;  // File descriptor for the server socket
+    int port;       // Port number the server will bind to
+    std::unordered_set<URI> supportedURI;
+                    // Set of URIs supported by this server
+    std::unordered_set<HttpMethod> supportedMethod;
+                    // Set of Methods supported by this server
+    std::thread listenerThread;
+    WorkerThread *workerThreads[threadPoolSize];
+    bool running;
+    std::string resourcesPath;
 };

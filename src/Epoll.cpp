@@ -1,32 +1,36 @@
 #include "Epoll.h"
+
 #include <unistd.h>
 #include <stdexcept>
 
 Epoll::Epoll() {
     epoll_fd = epoll_create1(0);
-    if (epoll_fd == -1) throw std::runtime_error("Failed to create epoll");
+    if (epoll_fd < 0) throw std::runtime_error("Failed to create epoll");
 }
 
 Epoll::~Epoll() {
     close(epoll_fd);
 }
 
-void Epoll::add(int fd) {
-    epoll_event event;
-    // Assign the event by this file descriptor
-    event.data.fd = fd;
-    // Make the event to notify once the fd is readable and everytime there's data to read from it
-    event.events = EPOLLIN | EPOLLET;
-    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &event);
+int Epoll::wait(epoll_event* workerEvent, int timeout) {
+    return epoll_wait(epoll_fd, workerEvent, maxEvents, timeout);
 }
 
-void Epoll::remove(int fd) {
-    epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, nullptr);
-}
+void Epoll::controlEvent(int ctrl_operation, int fd, std::uint32_t events, void *data, std::atomic<int>& client_count) {
+    epoll_event ev;
 
-std::vector<epoll_event> Epoll::wait(int timeout) {
-    std::vector<epoll_event> events(1024);
-    int n = epoll_wait(epoll_fd, events.data(), events.size(), timeout);
-    events.resize(n);
-    return events;
+    if (ctrl_operation == EPOLL_CTL_DEL) {
+        if (epoll_ctl(epoll_fd, ctrl_operation, fd, nullptr) < 0) {
+          throw std::runtime_error("Failed to remove file descriptor");
+        }
+        client_count--;
+      } else {
+        epoll_event ev;
+        ev.events = events;
+        ev.data.ptr = data;
+        if (epoll_ctl(epoll_fd, ctrl_operation, fd, &ev) < 0) {
+          throw std::runtime_error("Failed to add or modify file descriptor");
+        }
+        if (ctrl_operation == EPOLL_CTL_ADD) client_count++;
+      }
 }

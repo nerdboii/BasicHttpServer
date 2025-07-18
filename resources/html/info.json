@@ -1,0 +1,8 @@
+{
+    "server": {
+      "http_version": "HTTP/1.1",
+      "supported_methods": ["GET", "HEAD"],
+      "max_concurrent_clients": 10000,
+      "max_requests_per_second": 100000
+    }
+}

@@ -1,80 +1,149 @@
 #include "Server.h"
-#include "HttpParser.h"
-#include "HttpResponse.h"
 
 #include <sys/socket.h>
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <unistd.h>
 #include <iostream>
+#include <sstream>
 #include <cstring>
+#include <algorithm>
+#include <limits.h>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 Server::Server(int port) : port(port) {
-    setupServerSocket();
-    epoll.add(server_fd);
+    supportedMethod.insert(HttpMethod::GET);
+    supportedMethod.insert(HttpMethod::HEAD);
+    supportedURI.insert(URI("/"));
+    supportedURI.insert(URI("/about"));
+    running = false;
+    resourcesPath = "resources/html";
 }
 
 Server::~Server() {
-    close(server_fd);
+    for (int i = 0; i < threadPoolSize; i++) delete workerThreads[i];
 }
 
 void Server::setupServerSocket() {
-    server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    server_fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
     fcntl(server_fd, F_SETFL, O_NONBLOCK);
 
     int opt = 1;
-    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) < 0) {
+        throw std::runtime_error("Failed to set socket options");
+    }
 
     sockaddr_in addr {};
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = INADDR_ANY;
     addr.sin_port = htons(port);
 
-    bind(server_fd, (sockaddr*)&addr, sizeof(addr));
-    listen(server_fd, SOMAXCONN);
+    if (bind(server_fd, (sockaddr*)&addr, sizeof(addr)) < 0) {
+        throw std::runtime_error("Failed to bind to socket");
+    }
 }
 
 void Server::run() {
-    std::cout << "Server starts, listening to new connection" << std::endl;
-    while (true) {
-        // Get event list from kernel since the last wait
-        auto events = epoll.wait();
-        for (auto& event : events) {
-            // data.fd = serfer_fd means that there's a new connection need to be accepted
-            // Otherwise its a request from a connected client
-            if (event.data.fd == server_fd) {
-                acceptConnection();
-            } else {
-                handleClient(event.data.fd);
-            }
+    std::cout << "Server starts, listening to new connection on port: " << port << std::endl;
+
+    setupServerSocket();
+
+    if (listen(server_fd, backlogSize) < 0) {
+        std::ostringstream msg;
+        msg << "Failed to listen on port " << port;
+        throw std::runtime_error(msg.str());
+    }
+
+    running = true;
+    listenerThread = std::thread(&Server::clientListener, this);
+
+    for (int i = 0; i < threadPoolSize; i++) {
+        workerThreads[i] = new WorkerThread(this);
+        workerThreads[i]->start();
+    }
+}
+
+void Server::stop() {
+    running = false;
+    listenerThread.join();
+    
+    for (int i = 0; i < threadPoolSize; i++) {
+        workerThreads[i]->join();
+    }
+
+    close(server_fd);
+}
+
+HttpResponse Server::handleRequest(const HttpRequest& request) {
+    if (supportedMethod.find(request.getMethod()) == supportedMethod.end()) {
+        return HttpResponse(HttpStatusCode::MethodNotAllowed);
+    }
+
+    HttpResponse response;
+    std::string filePath = resourcesPath + request.getUri().getPath();
+
+    if (filePath == "/") {
+        response.setHeader("Content-Type", "text/plain");
+        response.setContent("Hello from C++ Server!");
+        return response;
+    }
+
+    if (!fs::exists(filePath) || !fs::is_regular_file(filePath)) {
+        response.SetStatusCode(HttpStatusCode::NotFound);
+        response.setHeader("Content-Type", "text/plain");
+        response.setContent("404 Not Found");
+    } else {
+        response.SetStatusCode(HttpStatusCode::Ok);
+        if (ends_with(filePath, ".html")) {
+            response.setHeader("Content-Type", "text/html");
+        } else if (ends_with(filePath, ".json")) {
+            response.setHeader("Content-Type", "application/json");
+        }
+        response.getContentFromFile(filePath);
+    }
+
+    return response;
+}
+
+WorkerThread* Server::pickLeastLoadedThread() {
+    int minClient = INT_MIN, workerIndex = 0;
+    for (int i = 0; i < threadPoolSize; i++) {
+        if (workerThreads[i]->countClient() < minClient) {
+            workerIndex = i;
+            minClient = workerThreads[i]->countClient();
         }
     }
+    return workerThreads[workerIndex];
 }
 
-void Server::acceptConnection() {
-    while (true) {
-        int client_fd = accept(server_fd, nullptr, nullptr);
-        if (client_fd == -1) break;
-        fcntl(client_fd, F_SETFL, O_NONBLOCK);
-        epoll.add(client_fd);
+void Server::clientListener() {
+    EventData *client_data;
+    sockaddr_in client_address;
+    socklen_t client_len = sizeof(client_address);
+    int client_fd;
+    bool active = true;
+  
+    // accept new connections and distribute tasks to worker threads
+    while (running) {
+        if (!active) {
+            // avoid contention
+            auto& rng = RandomUtils::rng();
+            auto& sleep_times = RandomUtils::sleepTimes();
+            int sleep_time = sleep_times(rng);
+            std::this_thread::sleep_for(std::chrono::microseconds(sleep_time));
+        }
+        client_fd = accept4(server_fd, (sockaddr *)&client_address, &client_len, SOCK_NONBLOCK);
+        if (client_fd < 0) {
+            active = false;
+            continue;
+        }
+  
+        active = true;
+        client_data = new EventData();
+        client_data->fd = client_fd;
+        WorkerThread* worker = pickLeastLoadedThread();
+        worker->controlEvent(EPOLL_CTL_ADD, client_fd, EPOLLIN, client_data);
     }
-}
-
-void Server::handleClient(int client_fd) {
-    char buffer[4096];
-    int bytes = read(client_fd, buffer, sizeof(buffer));
-    if (bytes <= 0) {
-        close(client_fd);
-        return;
-    }
-
-    std::string request(buffer, bytes);
-    std::string path = HttpParser::getRequestPath(request);
-
-    std::string content = "<html><h1>Hello from C++ HTTP Server!</h1></html>";
-    if (path == "/about") content = "<html><h1>About Page</h1></html>";
-
-    std::string response = HttpResponse::buildResponse(content);
-    send(client_fd, response.c_str(), response.size(), 0);
-    close(client_fd);
 }
