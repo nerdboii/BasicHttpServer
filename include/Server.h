@@ -30,7 +30,6 @@ public:
     ~Server();
 
     // Adding supported URI and Method
-    void addSupportedURI(const URI& uri) { supportedURI.insert(uri); }
     void addSupportedMethod(const HttpMethod& method) { supportedMethod.insert(method); }
 
     /**
@@ -70,8 +69,6 @@ private:
 
     int server_fd;  // File descriptor for the server socket
     int port;       // Port number the server will bind to
-    std::unordered_set<URI> supportedURI;
-                    // Set of URIs supported by this server
     std::unordered_set<HttpMethod> supportedMethod;
                     // Set of Methods supported by this server
     std::thread listenerThread;

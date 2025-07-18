@@ -47,7 +47,7 @@ void WorkerThread::threadLoop() {
 void WorkerThread::handleEpollEvent(EventData* data, uint32_t events) {
     int client_fd = data->fd;
     EventData *request, *response;
-    ssize_t bytes;
+    size_t bytes;
 
     if (events == EPOLLIN) { // handling reading event
         request = data;
@@ -77,7 +77,7 @@ void WorkerThread::handleEpollEvent(EventData* data, uint32_t events) {
     } else { // handling writing event
         response = data;
         bytes = send(client_fd, response->buffer + response->cursor, response->length, 0);
-        if (bytes >= 0) {
+        if (bytes > 0) {
             if (bytes < response->length) { // message remaining
                 response->cursor += bytes;  // move the cursor to continue reading next bytes
                 response->length -= bytes;  // update remaining bytes

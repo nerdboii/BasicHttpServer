@@ -16,8 +16,6 @@ namespace fs = std::filesystem;
 Server::Server(int port) : port(port) {
     supportedMethod.insert(HttpMethod::GET);
     supportedMethod.insert(HttpMethod::HEAD);
-    supportedURI.insert(URI("/"));
-    supportedURI.insert(URI("/about"));
     running = false;
     resourcesPath = "resources/html";
 }

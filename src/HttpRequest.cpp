@@ -79,7 +79,7 @@ std::string to_string(const HttpRequest& request) {
 HttpRequest string_to_request(const std::string& requestString) {
     HttpRequest request;
     std::string startLine, header, body;
-    int start = 0, end = 0;
+    size_t start = 0, end = 0;
 
     // start line parsing
     std::string method, path, version;
