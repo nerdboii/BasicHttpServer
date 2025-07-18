@@ -1,3 +1,0 @@
-/home/poseidon/Projects/DTL_MiniProject/build/CMakeFiles/DTL_MINIPROJECT.dir
-/home/poseidon/Projects/DTL_MiniProject/build/CMakeFiles/edit_cache.dir
-/home/poseidon/Projects/DTL_MiniProject/build/CMakeFiles/rebuild_cache.dir
