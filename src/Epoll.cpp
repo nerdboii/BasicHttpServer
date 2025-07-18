@@ -17,7 +17,6 @@ int Epoll::wait(epoll_event* workerEvent, int timeout) {
 }
 
 void Epoll::controlEvent(int ctrl_operation, int fd, std::uint32_t events, void *data, std::atomic<int>& client_count) {
-    epoll_event ev;
 
     if (ctrl_operation == EPOLL_CTL_DEL) {
         if (epoll_ctl(epoll_fd, ctrl_operation, fd, nullptr) < 0) {
