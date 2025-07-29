@@ -80,7 +80,7 @@ HttpResponse Server::handleRequest(const HttpRequest& request) {
     }
 
     HttpResponse response;
-    std::string filePath = resourcesPath + request.getUri().getPath();
+    std::string filePath = request.getUri().getPath();
 
     if (filePath == "/") {
         response.setHeader("Content-Type", "text/plain");

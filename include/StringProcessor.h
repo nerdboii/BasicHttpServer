@@ -2,6 +2,14 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
+
+const std::unordered_map<std::string, std::pair<std::string, std::string>> fileExtensions = {
+    {".html", {"/html", "text/html"}},
+    {".json", {"/json", "application/json"}},
+    {".txt" , {"/txt" , "text/plain"}},
+    {".png" , {"/img" , "image"}}
+};
 
 /**
  * @brief Turn a string into lowercase
